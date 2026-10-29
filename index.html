@@ -122,6 +122,18 @@ footer{margin-top:40px;font-size:.78rem;color:var(--muted);border-top:1px solid 
 /* ===== ENDE ===== */
 </style>
 
+
+<style id="analytics-consent-style">
+#analytics-consent{position:fixed;z-index:99999;bottom:18px;left:18px;right:18px;max-width:560px;margin:auto;background:#fff;color:#183438;border:2px solid #168e89;border-radius:16px;padding:18px 20px;box-shadow:0 8px 35px #0005;font:15px/1.5 system-ui,sans-serif}
+#analytics-consent h2{font:700 20px system-ui,sans-serif;margin:0 0 8px;color:#183438}
+#analytics-consent p{margin:0 0 12px;color:#183438}
+#analytics-consent .consent-actions{display:flex;gap:10px;flex-wrap:wrap}
+#analytics-consent button,#analytics-settings{font:600 14px system-ui,sans-serif;border-radius:9px;padding:10px 15px;cursor:pointer}
+#analytics-accept{background:#087f7c;color:#fff;border:1px solid #087f7c}
+#analytics-reject{background:#fff;color:#183438;border:1px solid #567}
+#analytics-settings{position:fixed;z-index:99998;bottom:12px;right:12px;background:#fff;color:#183438;border:1px solid #567;box-shadow:0 2px 12px #0003}
+#analytics-consent[hidden]{display:none!important}
+</style>
 </head>
 <body>
 <div class="scene" aria-hidden="true">
@@ -822,5 +834,42 @@ window.addEventListener("hashchange",()=>show());chrome();show();
 
 </script>
 
+
+<div id="analytics-consent" role="dialog" aria-label="Analytics privacy choice" aria-modal="false" hidden>
+  <h2>Privacy &amp; visitor statistics</h2>
+  <p>May we use Google Analytics to understand how many people visit the FISHAO Reborn Wiki? If you accept, Google Analytics may set cookies and process usage data, including data transferred to Google. You can decline and still use the full wiki. Change your choice anytime using “Privacy settings”.</p>
+  <div class="consent-actions"><button id="analytics-reject" type="button">Reject analytics</button><button id="analytics-accept" type="button">Accept analytics</button></div>
+</div>
+<button id="analytics-settings" type="button" hidden>Privacy settings</button>
+<script id="analytics-consent-script">
+(function(){
+  'use strict';
+  var measurementId='G-DWF7ZPT8N2';
+  var storageKey='fishao-analytics-consent-v1';
+  var banner=document.getElementById('analytics-consent');
+  var settings=document.getElementById('analytics-settings');
+  var loaded=false;
+  function loadAnalytics(){
+    if(loaded)return;
+    loaded=true;
+    window.dataLayer=window.dataLayer||[];
+    window.gtag=function(){window.dataLayer.push(arguments);};
+    window.gtag('js',new Date());
+    window.gtag('config',measurementId);
+    var tag=document.createElement('script');
+    tag.async=true;
+    tag.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(measurementId);
+    document.head.appendChild(tag);
+  }
+  function readChoice(){try{return localStorage.getItem(storageKey);}catch(e){return null;}}
+  function saveChoice(choice){try{localStorage.setItem(storageKey,choice);}catch(e){}}
+  function render(choice){banner.hidden=choice==='accepted'||choice==='rejected';settings.hidden=false;}
+  document.getElementById('analytics-accept').addEventListener('click',function(){saveChoice('accepted');render('accepted');loadAnalytics();});
+  document.getElementById('analytics-reject').addEventListener('click',function(){saveChoice('rejected');render('rejected');});
+  settings.addEventListener('click',function(){banner.hidden=false;});
+  var choice=readChoice();render(choice);
+  if(choice==='accepted')loadAnalytics();
+})();
+</script>
 </body>
 </html>
